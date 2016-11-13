@@ -188,7 +188,7 @@ static const u32 ddir_act[2] = { BLK_TC_ACT(BLK_TC_READ),
  * blk_io_trace structure and places it in a per-cpu subbuffer.
  */
 
-#ifdef CONFIG_MOST
+#ifdef CONFIG_MOST  //cs 211 start
 struct blk_req_table
 {
         pid_t pid;
@@ -200,7 +200,7 @@ struct blk_req_table
 
 extern struct blk_req_table gblk_req_table[MOST_TABLE_SIZE];
 extern int gblk_current;
-#endif
+#endif  //cs 211 end
 
 static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 		     int rw, u32 what, int error, int pdu_len, void *pdu_data)
@@ -215,14 +215,14 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 	int cpu, pc = 0;
 	bool blk_tracer = blk_tracer_enabled;
 
-	#ifdef CONFIG_MOST
+	#ifdef CONFIG_MOST  //cs 211 start
 	        int gblk_index, loop_count;
 	        sector_t sector_trans;
 	        struct task_struct *tsk_orig=NULL;
 	        int temp_file;
 	#else
 		struct task_struct *tsk_orig=NULL;
-	#endif
+	#endif  //cs 211 end
 
 
 	if (unlikely(bt->trace_state != Blktrace_running && !blk_tracer))
@@ -241,7 +241,7 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 		return;
 	cpu = raw_smp_processor_id();
 
-	#ifdef CONFIG_MOST
+	#ifdef CONFIG_MOST //cs 211 start
 	        loop_count = MOST_TABLE_SIZE-1;
 
         if(gblk_current==0)
@@ -275,7 +275,7 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
                 else
                         gblk_index--;
         }while(loop_count--);
-	#endif
+	#endif  //cs 211 end
 
 
 
@@ -300,7 +300,7 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 	 */
 	local_irq_save(flags);
 
-#ifdef CONFIG_MOST
+#ifdef CONFIG_MOST  //cs 211 start
         {
                 if(tsk_orig!=NULL)
                 {
@@ -316,7 +316,7 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
         if (unlikely(tsk->btrace_seq != blktrace_seq))
                 trace_note_tsk(bt, tsk);
         }
-#endif 
+#endif  //cs 211 end
 
 	if (unlikely(tsk->btrace_seq != blktrace_seq))
 		trace_note_tsk(bt, tsk);
